@@ -2,6 +2,10 @@
 import os
 import json
 import requests
+import base64
+import hashlib
+import hmac
+import time
 from decimal import Decimal
 from pathlib import Path
 
@@ -11,6 +15,7 @@ API_TOKEN = os.environ["API_TOKEN"]
 NEW_API_USER = os.getenv("NEW_API_USER", "44031")
 
 FEISHU_WEBHOOK = os.getenv("FEISHU_WEBHOOK", "")
+FEISHU_SECRET = os.getenv("FEISHU_SECRET", "")
 WEWORK_WEBHOOK = os.getenv("WEWORK_WEBHOOK", "")
 
 DIVISOR = Decimal(os.getenv("BALANCE_DIVISOR", "500000"))
@@ -33,22 +38,46 @@ def save_state(state):
     )
 
 
+
 def send_message(message):
     results = []
 
     if FEISHU_WEBHOOK:
         try:
+            payload = {
+                "msg_type": "text",
+                "content": {"text": message}
+            }
+
+            # 飞书开启签名校验时，生成签名
+            if FEISHU_SECRET:
+                timestamp = str(int(time.time()))
+                string_to_sign = f"{timestamp}\n{FEISHU_SECRET}"
+
+                sign = base64.b64encode(
+                    hmac.new(
+                        string_to_sign.encode("utf-8"),
+                        digestmod=hashlib.sha256
+                    ).digest()
+                ).decode("utf-8")
+
+                payload["timestamp"] = timestamp
+                payload["sign"] = sign
+
             r = requests.post(
                 FEISHU_WEBHOOK,
-                json={
-                    "msg_type": "text",
-                    "content": {"text": message}
-                },
+                json=payload,
                 timeout=15
             )
             r.raise_for_status()
+
+            result = r.json()
+            if result.get("code", 0) != 0:
+                raise RuntimeError(str(result))
+
             results.append("Feishu")
             print("飞书通知成功")
+
         except Exception as e:
             print("飞书通知失败:", e)
 
@@ -63,8 +92,14 @@ def send_message(message):
                 timeout=15
             )
             r.raise_for_status()
+
+            result = r.json()
+            if result.get("errcode", 0) != 0:
+                raise RuntimeError(str(result))
+
             results.append("WeCom")
             print("企微通知成功")
+
         except Exception as e:
             print("企微通知失败:", e)
 
