@@ -34,6 +34,7 @@ jobs:
           API_TOKEN: ${{ secrets.API_TOKEN }}
           NEW_API_USER: ${{ vars.NEW_API_USER }}
           FEISHU_WEBHOOK: ${{ secrets.FEISHU_WEBHOOK }}
+          FEISHU_SECRET: ${{ secrets.FEISHU_SECRET }}
           WEWORK_WEBHOOK: ${{ secrets.WEWORK_WEBHOOK }}
           BALANCE_DIVISOR: ${{ vars.BALANCE_DIVISOR }}
           ALERT_THRESHOLD: ${{ vars.ALERT_THRESHOLD }}
