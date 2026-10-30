@@ -7,11 +7,11 @@ from pathlib import Path
 
 API_URL = "https://ai.comfly.org/api/user/self"
 
-API_TOKEN = os.environ["oyW8IsoxaAR2/WkXlPe1oH1aZOCU"]
+API_TOKEN = os.environ["API_TOKEN"]
 NEW_API_USER = os.getenv("NEW_API_USER", "44031")
 
-FEISHU_WEBHOOK = os.getenv("FEISHU_WEBHOOK", "https://open.feishu.cn/open-apis/bot/v2/hook/bc2bb457-4bbe-4b5e-83b8-95c6f1845a19")
-WEWORK_WEBHOOK = os.getenv("WEWORK_WEBHOOK", "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=670a36c8-406a-4455-9bc0-bc386b62ca6d")
+FEISHU_WEBHOOK = os.getenv("FEISHU_WEBHOOK", "")
+WEWORK_WEBHOOK = os.getenv("WEWORK_WEBHOOK", "")
 
 DIVISOR = Decimal(os.getenv("BALANCE_DIVISOR", "500000"))
 ALERT_THRESHOLD = Decimal(os.getenv("ALERT_THRESHOLD", "100"))
